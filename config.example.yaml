@@ -1,0 +1,22 @@
+# credential-gateway example config
+# Install to ~/.config/credential-gateway/config.yaml with mode 0600
+# or /etc/credential-gateway/config.yaml (root-owned, mode 0600)
+
+http:
+  - name: openai
+    listen: "127.0.0.1:8080"
+    upstream: "https://api.openai.com"
+    headers:
+      Authorization: "Bearer sk-REPLACE_ME"
+
+mysql:
+  - listen: "127.0.0.1:3307"
+    upstream: "real-db-host:3306"
+    user: dbuser
+    password: "REPLACE_ME"
+    database: mydb
+
+redis:
+  - listen: "127.0.0.1:6380"
+    upstream: "real-redis-host:6379"
+    password: "REPLACE_ME"

@@ -1,0 +1,3 @@
+credential-gateway
+*.yaml
+!config.example.yaml
