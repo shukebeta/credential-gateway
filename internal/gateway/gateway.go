@@ -51,6 +51,12 @@ func New(cfg *config.Config, log *slog.Logger) *Gateway {
 			l:    &postgresProxy{cfg: pg, log: log},
 		})
 	}
+	for _, o := range cfg.Oracle {
+		g.listeners = append(g.listeners, namedListener{
+			name: "oracle:" + o.Listen,
+			l:    &oracleProxy{cfg: o, log: log},
+		})
+	}
 	return g
 }
 

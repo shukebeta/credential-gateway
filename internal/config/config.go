@@ -37,11 +37,20 @@ type PostgreSQLService struct {
 	Database string `yaml:"database"`
 }
 
+type OracleService struct {
+	Listen   string `yaml:"listen"`
+	Upstream string `yaml:"upstream"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Service  string `yaml:"service"`
+}
+
 type Config struct {
 	HTTP     []HTTPService       `yaml:"http"`
 	MySQL    []MySQLService      `yaml:"mysql"`
 	Redis    []RedisService      `yaml:"redis"`
 	Postgres []PostgreSQLService `yaml:"postgres"`
+	Oracle   []OracleService     `yaml:"oracle"`
 }
 
 var searchPaths = []string{
@@ -155,7 +164,30 @@ func (c *Config) Validate() error {
 		seen[p.Listen] = label
 	}
 
-	if len(c.HTTP)+len(c.MySQL)+len(c.Redis)+len(c.Postgres) == 0 {
+	for i, o := range c.Oracle {
+		label := fmt.Sprintf("oracle[%d]", i)
+		if o.Listen == "" {
+			return fmt.Errorf("%s: missing required field 'listen'", label)
+		}
+		if o.Upstream == "" {
+			return fmt.Errorf("%s: missing required field 'upstream'", label)
+		}
+		if o.User == "" {
+			return fmt.Errorf("%s: missing required field 'user'", label)
+		}
+		if o.Password == "" {
+			return fmt.Errorf("%s: missing required field 'password'", label)
+		}
+		if o.Service == "" {
+			return fmt.Errorf("%s: missing required field 'service'", label)
+		}
+		if prev, dup := seen[o.Listen]; dup {
+			return fmt.Errorf("%s: duplicate listen address %q (already used by %s)", label, o.Listen, prev)
+		}
+		seen[o.Listen] = label
+	}
+
+	if len(c.HTTP)+len(c.MySQL)+len(c.Redis)+len(c.Postgres)+len(c.Oracle) == 0 {
 		return fmt.Errorf("config defines no listeners")
 	}
 

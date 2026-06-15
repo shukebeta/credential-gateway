@@ -27,3 +27,10 @@ postgres:
     user: dbuser
     password: "REPLACE_ME"
     database: mydb   # optional; falls through to client's requested database if omitted
+
+# oracle:
+#   - listen: "127.0.0.1:1522"
+#     upstream: "real-oracle-host:1521"
+#     user: appuser
+#     password: "REPLACE_ME"
+#     service: ORCLPDB1   # Oracle service name sent in the TNS connect descriptor
