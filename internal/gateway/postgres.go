@@ -313,10 +313,7 @@ func pgReadStartup(r io.Reader) ([]byte, error) {
 	if _, err := io.ReadFull(r, body); err != nil {
 		return nil, err
 	}
-	// Return the full 4-byte content (the protocol/request-code word) + rest.
-	out := make([]byte, length-4)
-	copy(out, body)
-	return out, nil
+	return body, nil
 }
 
 // pgWriteStartup writes a startup packet (length-prefixed, no type byte).
