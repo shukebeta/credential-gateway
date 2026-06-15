@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -122,7 +123,7 @@ redis:
 				t.Fatal("expected error, got nil")
 			}
 			if tc.wantErr != "" {
-				if !contains(err.Error(), tc.wantErr) {
+				if !strings.Contains(err.Error(), tc.wantErr) {
 					t.Errorf("error %q does not mention %q", err.Error(), tc.wantErr)
 				}
 			}
@@ -157,7 +158,7 @@ redis:
 	if err == nil {
 		t.Fatal("expected error for duplicate listen address, got nil")
 	}
-	if !contains(err.Error(), "duplicate") {
+	if !strings.Contains(err.Error(), "duplicate") {
 		t.Errorf("error %q does not mention 'duplicate'", err.Error())
 	}
 }
@@ -172,7 +173,7 @@ func TestLoad_WorldReadableConfig(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for world-readable config, got nil")
 	}
-	if !contains(err.Error(), "permissions") {
+	if !strings.Contains(err.Error(), "permissions") {
 		t.Errorf("error %q does not mention 'permissions'", err.Error())
 	}
 }
@@ -183,19 +184,7 @@ func TestLoad_EmptyConfig(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for empty config, got nil")
 	}
-	if !contains(err.Error(), "no listeners") {
+	if !strings.Contains(err.Error(), "no listeners") {
 		t.Errorf("error %q does not mention 'no listeners'", err.Error())
 	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
-		func() bool {
-			for i := 0; i <= len(s)-len(substr); i++ {
-				if s[i:i+len(substr)] == substr {
-					return true
-				}
-			}
-			return false
-		}())
 }
