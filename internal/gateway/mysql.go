@@ -193,8 +193,9 @@ func mysqlParseNonce(payload []byte) ([]byte, error) {
 	capHigh := uint16(payload[pos]) | uint16(payload[pos+1])<<8
 	pos += 2
 
+	// CLIENT_PLUGIN_AUTH = 0x00080000; in the upper 2 bytes that is bit 0x0008.
 	authDataLen := 0
-	if capHigh&0x0800 != 0 { // CLIENT_PLUGIN_AUTH in upper 2 bytes of cap
+	if capHigh&0x0008 != 0 {
 		authDataLen = int(payload[pos])
 	}
 	pos++      // auth_plugin_data_len
