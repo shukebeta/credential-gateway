@@ -45,6 +45,12 @@ func New(cfg *config.Config, log *slog.Logger) *Gateway {
 			l:    &redisProxy{cfg: r, log: log},
 		})
 	}
+	for _, pg := range cfg.Postgres {
+		g.listeners = append(g.listeners, namedListener{
+			name: "postgres:" + pg.Listen,
+			l:    &postgresProxy{cfg: pg, log: log},
+		})
+	}
 	return g
 }
 

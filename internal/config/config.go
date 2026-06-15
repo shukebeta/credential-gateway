@@ -29,10 +29,19 @@ type RedisService struct {
 	Password string `yaml:"password"`
 }
 
+type PostgreSQLService struct {
+	Listen   string `yaml:"listen"`
+	Upstream string `yaml:"upstream"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Database string `yaml:"database"`
+}
+
 type Config struct {
-	HTTP  []HTTPService  `yaml:"http"`
-	MySQL []MySQLService `yaml:"mysql"`
-	Redis []RedisService `yaml:"redis"`
+	HTTP     []HTTPService       `yaml:"http"`
+	MySQL    []MySQLService      `yaml:"mysql"`
+	Redis    []RedisService      `yaml:"redis"`
+	Postgres []PostgreSQLService `yaml:"postgres"`
 }
 
 var searchPaths = []string{
@@ -126,7 +135,27 @@ func (c *Config) Validate() error {
 		seen[r.Listen] = label
 	}
 
-	if len(c.HTTP)+len(c.MySQL)+len(c.Redis) == 0 {
+	for i, p := range c.Postgres {
+		label := fmt.Sprintf("postgres[%d]", i)
+		if p.Listen == "" {
+			return fmt.Errorf("%s: missing required field 'listen'", label)
+		}
+		if p.Upstream == "" {
+			return fmt.Errorf("%s: missing required field 'upstream'", label)
+		}
+		if p.User == "" {
+			return fmt.Errorf("%s: missing required field 'user'", label)
+		}
+		if p.Password == "" {
+			return fmt.Errorf("%s: missing required field 'password'", label)
+		}
+		if prev, dup := seen[p.Listen]; dup {
+			return fmt.Errorf("%s: duplicate listen address %q (already used by %s)", label, p.Listen, prev)
+		}
+		seen[p.Listen] = label
+	}
+
+	if len(c.HTTP)+len(c.MySQL)+len(c.Redis)+len(c.Postgres) == 0 {
 		return fmt.Errorf("config defines no listeners")
 	}
 

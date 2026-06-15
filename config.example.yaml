@@ -20,3 +20,10 @@ redis:
   - listen: "127.0.0.1:6380"
     upstream: "real-redis-host:6379"
     password: "REPLACE_ME"
+
+postgres:
+  - listen: "127.0.0.1:5433"
+    upstream: "real-pg-host:5432"
+    user: dbuser
+    password: "REPLACE_ME"
+    database: mydb   # optional; falls through to client's requested database if omitted
